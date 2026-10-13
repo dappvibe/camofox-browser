@@ -1,0 +1,25 @@
+[Unit]
+Description=Camofox Browser Backend (headed, bot desktop :20)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/home/max/src/camofox-browser
+Environment="DISPLAY=:20"
+Environment="XAUTHORITY=/home/max/.hermes/bot-desktop/Xauthority"
+Environment="CAMOFOX_INTERACTIVE=desktop"
+Environment="CAMOFOX_PORT=9377"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/max/.local/bin"
+ExecStartPre=-/home/max/.local/bin/hermes computer-use screen start
+ExecStart=/usr/bin/node --max-old-space-size=1024 server.js
+Restart=always
+RestartSec=5
+KillMode=mixed
+KillSignal=SIGTERM
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
