@@ -18,10 +18,13 @@ x-camofox-common: &camofox-common
     VNC_RFB_BIND: "0.0.0.0"
     VNC_PORT: "5900"
     MAX_OLD_SPACE_SIZE: "512"
+    # Один общий VNC-пароль на все инстансы — простота важнее на старте,
+    # пока сервис виден только внутри домашней LAN.
+    VNC_PASSWORD: "${CAMOFOX_VNC_PASSWORD}"
 
 services:
   # Профиль Hermes: default (max)
-  camofox-default:
+  max:
     <<: *camofox-common
     ports:
       - "9377:9377"
@@ -29,23 +32,22 @@ services:
     environment:
       <<: *camofox-common-env
       CAMOFOX_PORT: "9377"
-      VNC_PASSWORD: "${CAMOFOX_DEFAULT_VNC_PASSWORD}"
     volumes:
       - "./data/default:/root/.camofox/profiles"
     mem_limit: "768m"
     mem_reservation: "256m"
 
-  # Профиль Hermes: ozon-seller-mstyle
-  # camofox-ozon-seller-mstyle:
-  #   <<: *camofox-common
-  #   ports:
-  #     - "9378:9378"
-  #     - "5901:5900"
-  #   environment:
-  #     <<: *camofox-common-env
-  #     CAMOFOX_PORT: "9378"
-  #     VNC_PASSWORD: "${CAMOFOX_OZON_SELLER_MSTYLE_VNC_PASSWORD}"
-  #   volumes:
-  #     - "./data/ozon-seller-mstyle:/root/.camofox/profiles"
-  #   mem_limit: "768m"
-  #   mem_reservation: "256m"
+  # Профиль Hermes: divorum (прод-проект личных AI-агентов, B2C)
+  divorum:
+    <<: *camofox-common
+    ports:
+      - "9378:9378"
+      - "5901:5900"
+    environment:
+      <<: *camofox-common-env
+      CAMOFOX_PORT: "9378"
+    volumes:
+      - "./data/divorum:/root/.camofox/profiles"
+    mem_limit: "768m"
+    mem_reservation: "256m"
+
