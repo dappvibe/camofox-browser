@@ -21,6 +21,14 @@ x-camofox-common: &camofox-common
     # Один общий VNC-пароль на все инстансы — простота важнее на старте,
     # пока сервис виден только внутри домашней LAN.
     VNC_PASSWORD: "${CAMOFOX_VNC_PASSWORD}"
+    # Бюджет памяти ноутбука: 8GB на 4 профиля = 2GB на инстанс (mem_limit
+    # ниже). Эти два лимита держат фактическое использование в рамках
+    # измеренного живого потребления (прод-тест 14.10.2026: один Camoufox-
+    # движок без вкладок ~650-700MB, каждая дополнительная тяжёлая вкладка
+    # Ozon добавляет ~115-245MB отдельным процессом) — 2 вкладки на
+    # пользователя не должны выходить за 2GB mem_limit даже на тяжёлых сайтах.
+    MAX_CONCURRENT_PER_USER: "2"
+    BROWSER_IDLE_TIMEOUT_MS: "3600000"
 
 services:
   # Профиль Hermes: default (max)
@@ -34,8 +42,8 @@ services:
       CAMOFOX_PORT: "9377"
     volumes:
       - "./data/default:/root/.camofox/profiles"
-    mem_limit: "768m"
-    mem_reservation: "256m"
+    mem_limit: "2g"
+    mem_reservation: "512m"
 
   # Профиль Hermes: divorum (прод-проект личных AI-агентов, B2C)
   divorum:
@@ -48,6 +56,6 @@ services:
       CAMOFOX_PORT: "9378"
     volumes:
       - "./data/divorum:/root/.camofox/profiles"
-    mem_limit: "768m"
-    mem_reservation: "256m"
+    mem_limit: "2g"
+    mem_reservation: "512m"
 
