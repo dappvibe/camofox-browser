@@ -32,6 +32,11 @@ x-camofox-common: &camofox-common
     # пользователя не должны выходить за 2GB mem_limit даже на тяжёлых сайтах.
     MAX_CONCURRENT_PER_USER: "2"
     BROWSER_IDLE_TIMEOUT_MS: "3600000"
+    # Отдельный от BROWSER_IDLE_TIMEOUT_MS таймер — закрывает КОНКРЕТНУЮ
+    # вкладку, если по ней 5 минут (дефолт) не было вызовов REST API. Не
+    # видит ручную активность человека через VNC — поднят до того же
+    # часа, чтобы не закрывать вкладку из-под рук при ручной работе.
+    TAB_INACTIVITY_MS: "3600000"
 
 services:
   # Профиль Hermes: default (max)
