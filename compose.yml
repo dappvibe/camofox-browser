@@ -17,6 +17,8 @@ x-camofox-common: &camofox-common
     ENABLE_VNC: "1"
     VNC_RFB_BIND: "0.0.0.0"
     VNC_PORT: "5900"
+    VNC_RESOLUTION: "1600x900"
+    CAMOFOX_WINDOW_SIZE: "1600x900"
     MAX_OLD_SPACE_SIZE: "512"
     # Общий формальный пароль на все инстансы — софт жёстко требует его для
     # VNC_RFB_BIND не-loopback (vnc-watcher.sh отказывается стартовать без
