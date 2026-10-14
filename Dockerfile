@@ -106,7 +106,7 @@ ENV CAMOFOX_PORT=9377
 
 EXPOSE 9377
 
-CMD ["sh", "-c", "node --max-old-space-size=${MAX_OLD_SPACE_SIZE:-128} server.js"]
+CMD ["sh", "-c", "exec node --max-old-space-size=${MAX_OLD_SPACE_SIZE:-128} server.js"]
 
 # Optional: rebuild plugin deps after adding third-party plugins
 # Usage: docker build --target with-plugins -t camofox-browser .
