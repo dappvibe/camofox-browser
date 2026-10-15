@@ -53,8 +53,10 @@ services:
     mem_limit: "2g"
     mem_reservation: "512m"
 
-  # Профиль Hermes: divorum (прод-проект личных AI-агентов, B2C)
-  divorum:
+  # Профиль Hermes: client-* (Mercurio, прод-проект личных AI-агентов, B2C) —
+  # общий контейнер на все client-<id> профили, пока без per-client изоляции
+  # порта (это отдельная будущая задача — супервизор + N контейнеров).
+  client:
     <<: *camofox-common
     ports:
       - "9378:9378"
@@ -63,7 +65,7 @@ services:
       <<: *camofox-common-env
       CAMOFOX_PORT: "9378"
     volumes:
-      - "./data/divorum:/root/.camofox/profiles"
+      - "./data/client:/root/.camofox/profiles"
     mem_limit: "2g"
     mem_reservation: "512m"
 
