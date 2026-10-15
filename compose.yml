@@ -53,10 +53,10 @@ services:
     mem_limit: "2g"
     mem_reservation: "512m"
 
-  # Профиль Hermes: client-* (Mercurio, прод-проект личных AI-агентов, B2C) —
-  # общий контейнер на все client-<id> профили, пока без per-client изоляции
-  # порта (это отдельная будущая задача — супервизор + N контейнеров).
-  client:
+  # Профиль Hermes: client-5080161070 (Mercurio, прод-проект личных AI-агентов, B2C).
+  # Имя сервиса — точное совпадение с именем Hermes-профиля (profiles/client-5080161070/).
+  # Lobby — без браузерной сессии (браузер в тулсете лобби отключён намеренно).
+  client-5080161070:
     <<: *camofox-common
     ports:
       - "9378:9378"
@@ -65,7 +65,7 @@ services:
       <<: *camofox-common-env
       CAMOFOX_PORT: "9378"
     volumes:
-      - "./data/client:/root/.camofox/profiles"
+      - "./data/client-5080161070:/root/.camofox/profiles"
     mem_limit: "2g"
     mem_reservation: "512m"
 
