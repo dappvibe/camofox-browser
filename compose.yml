@@ -3,8 +3,8 @@
 # время жизни самого браузера внутри регулируется переменными окружения
 # camofox-browser (BROWSER_IDLE_TIMEOUT_MS и т.д.), не Docker'ом.
 #
-# На данном этапе список сервисов/профилей ведётся вручную: скопировать блок
-# под новым именем, поменять CAMOFOX_PORT/VNC_PORT/volume.
+# Клиентские сервисы живут в compose.d/<profile-name>.yml — генерируются
+# автоматически плагином mercurio-lobby при градуации нового клиента.
 #
 # Порты по конвенции: REST = 9377 + N, VNC = 5900 + N (N = 0, 1, 2...).
 
@@ -53,19 +53,6 @@ services:
     mem_limit: "2g"
     mem_reservation: "512m"
 
-  # Профиль Hermes: client-5080161070 (Mercurio, прод-проект личных AI-агентов, B2C).
-  # Имя сервиса — точное совпадение с именем Hermes-профиля (profiles/client-5080161070/).
-  # Lobby — без браузерной сессии (браузер в тулсете лобби отключён намеренно).
-  client-5080161070:
-    <<: *camofox-common
-    ports:
-      - "9378:9378"
-      - "5901:5900"
-    environment:
-      <<: *camofox-common-env
-      CAMOFOX_PORT: "9378"
-    volumes:
-      - "./data/client-5080161070:/root/.camofox/profiles"
-    mem_limit: "2g"
-    mem_reservation: "512m"
-
+include:
+  - compose.d/client-5080161070.yml
+  - compose.d/client-6470649135.yml
