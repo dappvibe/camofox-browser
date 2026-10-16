@@ -56,3 +56,4 @@ services:
 include:
   - compose.d/client-5080161070.yml
   - compose.d/client-6470649135.yml
+  - compose.d/client-6006923663.yml
