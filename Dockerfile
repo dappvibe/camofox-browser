@@ -14,6 +14,13 @@ ARG YT_DLP_SHA256=1fa6733c37ea6fb51c99ad8fe785e7b7e5f3246c9b980230329d4fb72ed8d4
 
 # Install dependencies for Camoufox (Firefox-based)
 RUN apt-get update && apt-get install -y \
+    # PID 1 init -- reaps zombie processes. Without it, orphaned grandchildren
+    # (e.g. x11vnc after `-bg` double-forks, reparented away from vnc-watcher.sh)
+    # become permanent <defunct> zombies once node (CMD, running as PID 1) never
+    # calls wait() on them. kill -0 keeps reporting them "alive" forever, so the
+    # VNC watcher's reattach logic never fires and the display stays stuck after
+    # the first disconnect/crash until the container is restarted by hand.
+    tini \
     # Firefox dependencies
     libgtk-3-0 \
     libdbus-glib-1-2 \
@@ -106,6 +113,7 @@ ENV CAMOFOX_PORT=9377
 
 EXPOSE 9377
 
+ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["sh", "-c", "exec node --max-old-space-size=${MAX_OLD_SPACE_SIZE:-128} server.js"]
 
 # Optional: rebuild plugin deps after adding third-party plugins

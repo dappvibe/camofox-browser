@@ -108,4 +108,28 @@ describe('vnc watcher helpers', () => {
     expect(shell('if x11vnc_needs_reattach 99999999; then echo yes; else echo no; fi')).toBe('yes');
     expect(shell('if x11vnc_needs_reattach ""; then echo yes; else echo no; fi')).toBe('no');
   });
+
+  test('requests reattachment for a zombie process even though kill -0 still succeeds on it', () => {
+    // Regression for the stuck-VNC-after-first-disconnect bug: without an init
+    // (PID 1) to reap orphaned grandchildren, a dead x11vnc stays <defunct>
+    // forever and `kill -0` on a zombie PID still reports success. The watcher
+    // must treat state Z the same as "process is gone" or it never reattaches.
+    // A real zombie is too environment-dependent to produce deterministically
+    // here (Node/most shells reap their own children almost immediately), so
+    // shadow `ps` on PATH to report state Z for this PID, same contract the
+    // real zombie exhibits.
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'camofox-vnc-test-'));
+    tempDirs.push(root);
+    const fakePs = path.join(root, 'ps');
+    fs.writeFileSync(fakePs, '#!/bin/sh\necho "Z+"\n');
+    fs.chmodSync(fakePs, 0o755);
+
+    const result = execFileSync(
+      'sh',
+      ['-c', `PATH="$1:$PATH"; . "$2"; if x11vnc_needs_reattach "$3"; then echo yes; else echo no; fi`, 'sh', root, library, String(process.pid)],
+      { encoding: 'utf8' },
+    ).trim();
+
+    expect(result).toBe('yes');
+  });
 });

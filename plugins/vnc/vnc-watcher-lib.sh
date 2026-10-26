@@ -72,5 +72,15 @@ x11vnc_listen_args() {
 x11vnc_needs_reattach() {
   tracked_pid="$1"
   [ -n "$tracked_pid" ] || return 1
-  ! kill -0 "$tracked_pid" 2>/dev/null
+  if ! kill -0 "$tracked_pid" 2>/dev/null; then
+    return 0
+  fi
+  # kill -0 succeeds for zombies too -- a dead-but-unreaped x11vnc (e.g. PID 1
+  # has no init to wait() on orphaned grandchildren) otherwise looks "alive"
+  # forever and the watcher never reattaches. Treat state Z the same as exited.
+  process_state=$(ps -o stat= -p "$tracked_pid" 2>/dev/null | tr -d ' ')
+  case "$process_state" in
+    Z*) return 0 ;;
+  esac
+  return 1
 }
