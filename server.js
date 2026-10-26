@@ -6128,8 +6128,12 @@ if (FLY_MACHINE_ID) {
   }, 30_000);
 }
 
-// Per-tab inactivity reaper — close tabs idle for TAB_INACTIVITY_MS
+// Per-tab inactivity reaper — close tabs idle for TAB_INACTIVITY_MS. 0 disables
+// reaping entirely (consistent with SESSION_TIMEOUT_MS/BROWSER_IDLE_TIMEOUT_MS);
+// without this guard, TAB_INACTIVITY_MS=0 would make idleMs >= 0 always true and
+// reap every tab on the very first tick after its toolCalls count stops changing.
 setInterval(() => {
+  if (TAB_INACTIVITY_MS <= 0) return;
   const now = Date.now();
   for (const [userId, session] of sessions) {
     for (const [listItemId, group] of session.tabGroups) {

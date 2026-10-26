@@ -18,8 +18,9 @@ services:
       MAX_OLD_SPACE_SIZE: "512"
       VNC_PASSWORD: "password"
       MAX_CONCURRENT_PER_USER: "2"
-      BROWSER_IDLE_TIMEOUT_MS: "3600000"
-      TAB_INACTIVITY_MS: "3600000"
+      BROWSER_IDLE_TIMEOUT_MS: "0"
+      SESSION_TIMEOUT_MS: "0"
+      TAB_INACTIVITY_MS: "0"
       CAMOFOX_PORT: "9381"
     volumes:
       - "../data/client-8159195034:/root/.camofox/profiles"

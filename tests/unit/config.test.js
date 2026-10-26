@@ -102,16 +102,30 @@ describe('loadConfig', () => {
     expect(config.browserIdleTimeoutMs).toBe(0);
   });
 
+  test('preserves TAB_INACTIVITY_MS=0 to disable tab reaping instead of falling back to the default', () => {
+    // Regression: tabInactivityMs used to be `parseInt(...) || 300000`, which
+    // treats an explicit "0" the same as unset/invalid (both falsy), silently
+    // ignoring the request to disable reaping -- inconsistent with the sibling
+    // timeouts above, which both honor 0 via a NaN check.
+    process.env.TAB_INACTIVITY_MS = '0';
+
+    expect(loadConfig().tabInactivityMs).toBe(0);
+  });
+
   test('uses default timeout values when timeout environment variables are unset or invalid', () => {
     delete process.env.SESSION_TIMEOUT_MS;
     delete process.env.BROWSER_IDLE_TIMEOUT_MS;
+    delete process.env.TAB_INACTIVITY_MS;
     expect(loadConfig().sessionTimeoutMs).toBe(600000);
     expect(loadConfig().browserIdleTimeoutMs).toBe(300000);
+    expect(loadConfig().tabInactivityMs).toBe(300000);
 
     process.env.SESSION_TIMEOUT_MS = 'not-a-number';
     process.env.BROWSER_IDLE_TIMEOUT_MS = 'not-a-number';
+    process.env.TAB_INACTIVITY_MS = 'not-a-number';
     expect(loadConfig().sessionTimeoutMs).toBe(600000);
     expect(loadConfig().browserIdleTimeoutMs).toBe(300000);
+    expect(loadConfig().tabInactivityMs).toBe(300000);
   });
 
   test('configures browser RSS restart threshold', () => {
